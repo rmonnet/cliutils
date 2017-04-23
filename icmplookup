@@ -1,0 +1,43 @@
+#!/usr/bin/perl
+
+# This script converts a hostname to an IP address using ICMP+DNS rather than DNS only.
+# this is useful for the .local hostnames, when multicast DNS lookup is not setup.
+# You would use this script when "nslookup <hostname>.local" fails on you LAN but
+# you can still find the machine with commands such as ssh or ping,
+
+use warnings;
+
+if (@ARGV == 0 || $ARGV[0] =~ "-h" || $ARGV[0] =~ "--help" || $ARGV[0] =~ /^-/) {
+    $HELP = <<'END';
+icmplookup:
+    Lookup a hostname and returns it IPv4 address.
+    The hostname can be internet accessible or can be a '.local' hostname only visible
+        on the current LAN.
+    This command is useful to substitute local hostname with their IP in command line.
+tested on:
+    linux, darwin
+example:
+    icmplookup <name>.local
+usage:
+    icmplookup <hostname>
+END
+    print("$HELP\n");
+    exit 1;
+}
+
+# use the fact that the ping command check DNS but also ICMP, which find the 
+# .local hosts on the local network if zeroconf is setup (OSX by default or avahi on Linux)
+# call ping with the option "-c 1" to get just one ping and parse the IP out of the response
+# return the IP if found.
+
+$hostname = $ARGV[0];
+$oneping = `ping -c 1 $hostname`;
+($IP) = $oneping =~ /PING $hostname \((\d+\.\d+\.\d+\.\d+)\)/;
+if ($IP) {
+    print "$IP";
+    exit 0;
+} else {
+    exit 1;
+} 
+
+
