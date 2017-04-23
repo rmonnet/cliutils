@@ -13,6 +13,10 @@ Why perl? perl is installed by default on linux and darwin and has a lot of buil
 
 Documentation: all scripts can be called without arguments or with '-h' or '--help' to get more information.
 
+## license
+
+The scripts in this repository are distributed under the MIT license.
+
 ## Commands
 
 ### icmplookup
